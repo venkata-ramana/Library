@@ -1,0 +1,76 @@
+<html>
+<head>
+<style>
+td{width:400px;padding-left:25px;}
+.left{font-size:14pt;text-align:right;font-weight:bold;width:200px;}
+</style>
+</head>
+<body>
+<?php	
+if(isset($_GET['id']))
+{
+$id=$_GET['id'];
+$con=mysql_connect("localhost","root","");
+mysql_select_db("library",$con) OR die("hello");
+$query="SELECT * FROM `login_details` WHERE `mem_id` LIKE '$id%'";
+$re=mysql_query($query,$con);
+echo "<table align='center' >";
+echo "<tr><th colspan=2><h2>Member Details</h2></th></tr>";
+
+while($data=mysql_fetch_array($re))
+{
+echo "
+<tr><td class=left>ID :</td><td>$data[0]</td></tr>
+<tr><td class=left>Name :</td><td>$data[1]</td></tr>
+<tr><td class=left>Group :</td><td>$data[2]</td></tr>
+<tr><td class=left>Address :</td><td>$data[3]</td></tr>
+<tr><td class=left>Phone :</td><td>$data[4]</td></tr>
+<tr><td class=left>Designation :</td><td>$data[5]</td></tr>
+<tr><td class=left>Department :</td><td>$data[6]</td></tr>";
+}
+//$query="INSERT into `logged_details`(`mem_id`,`login_time`) VALUES ('$id',CURRENT_TIMESTAMP)";
+//if(mysql_query($query,$con))
+//echo "<tr><th colspan=2>Successfully logged in</th></tr>";
+echo "</table>";
+
+echo "<table align='center' border=1>";
+echo "<tr><th width=300>Login Details</th></tr>";
+$query="SELECT * from `logged_details";
+$re=mysql_query($query,$con);
+while($rows=mysql_fetch_array($re))
+{
+echo "<tr><th>".get_date('2015-03-15 03:10:01')"</th></tr>";
+}
+echo "</table>";
+}
+
+?>
+
+<?php
+function get_date($date)
+{
+$time = strtotime($date);
+    $time = time() - $time; // to get the time since that moment
+
+    $tokens = array (
+        31536000 => 'year',
+        2592000 => 'month',
+        604800 => 'week',
+        86400 => 'day',
+        3600 => 'hour',
+        60 => 'min',
+        1 => 'sec',
+    );
+
+    foreach ($tokens as $unit => $text) {
+        if ($time < $unit) continue;
+        $numberOfUnits = floor($time / $unit);
+        return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'\'s ago':' ago');
+	//return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'\'s ago':' ago');
+	   
+}
+
+}
+?>
+</body>
+</html>

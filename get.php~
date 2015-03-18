@@ -1,0 +1,87 @@
+<html>
+<head>
+</head>
+<body>
+
+<form method="POST">
+<center><input type="text" name="id"></center>
+</form>
+
+<?php
+if(isset($_POST['id']))
+{	
+$id=$_POST['id'];
+$con=mysql_connect("localhost","root","");
+mysql_select_db("library",$con) OR die("hello");
+$query="SELECT * FROM `login_details` WHERE `mem_id` LIKE '$id%'";
+$re=mysql_query($query,$con);
+echo "<table align='center'>";
+while($data=mysql_fetch_array($re))
+{
+echo "
+<tr><td class=left>ID :</td><td>$data[0]</td></tr>
+<tr><td class=left>Name :</td><td>$data[1]</td></tr>
+<tr><td class=left>Group :</td><td>$data[2]</td></tr>
+<tr><td class=left>Address :</td><td>$data[3]</td></tr>
+<tr><td class=left>Phone :</td><td>$data[4]</td></tr>
+<tr><td class=left>Designation :</td><td>$data[5]</td></tr>
+<tr><td class=left>Department :</td><td>$data[6]</td></tr>";
+}
+$date=date('Y-m-d');
+$time=date('h:i:s');
+$timestamp=$date." ".$time;
+$query="INSERT into `logged_details`(`mem_id`,`login_time`) VALUES ('$id','$timestamp')";
+if(mysql_query($query,$con))
+echo "<tr><th colspan=2>Successfully logged in</th></tr>";
+echo "</table>";
+
+echo "<table align='center' border=1>";
+echo "<tr><th width=300>Last Login Details</th></tr>";
+$query="SELECT * FROM `logged_details` WHERE `mem_id` LIKE '$id%'";
+$re=mysql_query($query,$con);
+$arr=array();
+while($rows=mysql_fetch_array($re))
+{
+echo "<tr><th>".get_date($rows[2])."</th></tr>";
+$arr=$rows;
+}
+if(empty($arr))
+echo "<tr><th>no data available</th></tr>";
+echo "</table>";
+}
+
+?>
+
+<?php
+function get_date($date)
+{
+//$date="2015-03-15 03:10:01";
+$time = strtotime($date);
+    $time = time() - $time; // to get the time since that moment
+
+    $tokens = array (
+        31536000 => 'year',
+        2592000 => 'month',
+        604800 => 'week',
+        86400 => 'day',
+        3600 => 'hour',
+        60 => 'min',
+        1 => 'sec',
+        -1 => 'now'
+    );
+
+    foreach ($tokens as $unit => $text) {
+        if ($time < $unit) continue;
+        $numberOfUnits = floor($time / $unit);
+        if($unit==-1)
+        return $text;
+        else
+        return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'\'s ago':' ago');
+	//return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'\'s ago':' ago');
+	   
+}
+
+}
+?>
+</body>
+</html>
